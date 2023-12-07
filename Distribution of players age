@@ -1,0 +1,23 @@
+import pandas as pd
+from folium import Map, Marker
+
+# Read the CSV file into a DataFrame
+data = pd.read_csv('world_cup 2.csv')
+
+# Group the DataFrame by the 'team1' column and calculate the total number of goals for each team
+team_to_total_goals = data.groupby('team1')['number of goals team1'].sum()
+
+# Create a map of the world
+m = Map()
+
+# Add markers to the map for each team
+for team, total_goals in team_to_total_goals.items():
+    latitude, longitude = get_coordinates_for_team(team)
+    if latitude and longitude:
+        marker = Marker(location=(latitude, longitude), popup=f"{team}: {total_goals}")
+        marker.add_to(m)
+
+# Display the map
+m.add_layer(folium.LatLngPopup())
+m.fit_bounds(m.get_bounds())
+m.show()
